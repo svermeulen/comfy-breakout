@@ -10,9 +10,7 @@ fn base_path(path: &str) -> String {
 pub fn load_assets() {
     init_asset_source(&ASSET_DIR, base_path);
 
-    let textures = vec![
-        ("ball1", "img/ball1.png"),
-    ];
+    let textures = vec![("ball1", "img/ball1.png")];
 
     load_multiple_textures(
         textures
@@ -21,9 +19,7 @@ pub fn load_assets() {
             .collect_vec(),
     );
 
-    let sounds = vec![
-        ("ball-hit", "sfx/ball-hit.oga"),
-    ];
+    let sounds = vec![("ball-hit", "sfx/ball-hit.oga")];
 
     load_multiple_sounds(
         sounds

@@ -13,13 +13,13 @@ static WORLD_HEIGHT: f32 = WORLD_WIDTH * 16.0 / 9.0;
 static PADDLE_WIDTH: f32 = 5.0;
 static PADDLE_HEIGHT: f32 = 1.5;
 static PADDLE_MOVE_SPEED: f32 = 40.0;
-static PADDLE_BOTTOM_MARGIN:f32 = 3.0;
+static PADDLE_BOTTOM_MARGIN: f32 = 3.0;
 
 static BALL_MOVE_SPEED: f32 = 35.0;
-static BALL_RADIUS:f32 = 0.5;
+static BALL_RADIUS: f32 = 0.5;
 
-static BLOCK_WIDTH:f32 = 3.0;
-static BLOCK_HEIGHT:f32 = 1.5;
+static BLOCK_WIDTH: f32 = 3.0;
+static BLOCK_HEIGHT: f32 = 1.5;
 
 fn config(config: GameConfig) -> GameConfig {
     GameConfig {
@@ -61,17 +61,16 @@ fn generate_level() -> Level {
     for y in 0..num_blocks_per_col {
         for x in 0..num_blocks_per_row {
             blocks.push(Block {
-                center: start + vec2(
-                    BLOCK_HEIGHT * 0.5 + BLOCK_WIDTH * 0.5 + (x as f32) * cell_size.x,
-                    BLOCK_HEIGHT * 0.5 + (y as f32) * cell_size.y,
-                ),
+                center: start
+                    + vec2(
+                        BLOCK_HEIGHT * 0.5 + BLOCK_WIDTH * 0.5 + (x as f32) * cell_size.x,
+                        BLOCK_HEIGHT * 0.5 + (y as f32) * cell_size.y,
+                    ),
             });
         }
     }
 
-    return Level {
-        blocks,
-    };
+    return Level { blocks };
 }
 
 impl GameState {
@@ -83,7 +82,10 @@ impl GameState {
                 velocity: Vec2::new(BALL_MOVE_SPEED, BALL_MOVE_SPEED),
             },
             paddle: Paddle {
-                center: Vec2::new(0.0, -WORLD_HEIGHT * 0.5 + 0.5 * PADDLE_HEIGHT + PADDLE_BOTTOM_MARGIN),
+                center: Vec2::new(
+                    0.0,
+                    -WORLD_HEIGHT * 0.5 + 0.5 * PADDLE_HEIGHT + PADDLE_BOTTOM_MARGIN,
+                ),
             },
             level: generate_level(),
         }
@@ -112,7 +114,7 @@ fn setup(_state: &mut GameState, _c: &mut EngineContext) {
 }
 
 fn move_paddle(state: &mut GameState, time_delta: f32) {
-    let move_dir:f32;
+    let move_dir: f32;
 
     if is_key_down(KeyCode::Left) || is_key_down(KeyCode::A) {
         move_dir = -1.0;
@@ -140,17 +142,26 @@ fn move_paddle(state: &mut GameState, time_delta: f32) {
 }
 
 fn draw_capsule(color: Color, z_index: i32, position: Vec2, size: Vec2) {
-    draw_rect(
-        position,
-        size,
-        color,
-        z_index,
-    );
+    draw_rect(position, size, color, z_index);
 
     let radius = size.y * 0.5;
     let extent = vec2(1.0, 0.0) * size.x * 0.5;
-    draw_arc(position - extent, radius, PI * 0.5, 3.0 * PI / 2.0, color, z_index);
-    draw_arc(position + extent, radius, -PI * 0.5, PI * 0.5, color, z_index);
+    draw_arc(
+        position - extent,
+        radius,
+        PI * 0.5,
+        3.0 * PI / 2.0,
+        color,
+        z_index,
+    );
+    draw_arc(
+        position + extent,
+        radius,
+        -PI * 0.5,
+        PI * 0.5,
+        color,
+        z_index,
+    );
 }
 
 fn draw_level(state: &mut GameState) {
@@ -163,7 +174,12 @@ fn draw_level(state: &mut GameState) {
 
 fn draw_paddle(state: &mut GameState) {
     let color = Color::rgb8(50, 250, 50);
-    draw_capsule(color, 1, state.paddle.center, Vec2::new(PADDLE_WIDTH, PADDLE_HEIGHT));
+    draw_capsule(
+        color,
+        1,
+        state.paddle.center,
+        Vec2::new(PADDLE_WIDTH, PADDLE_HEIGHT),
+    );
 }
 
 fn draw_game(state: &mut GameState) {
@@ -183,9 +199,14 @@ fn draw_game(state: &mut GameState) {
 }
 
 fn collide_ball_with_capsule(
-        capsule_start:Vec2, capsule_end:Vec2, capsule_radius: f32, ball:&mut Ball, ball_new_pos:&mut Vec2) -> bool {
-
-    let (p1, p2) = closest_points_on_segments(ball.center, *ball_new_pos, capsule_start, capsule_end);
+    capsule_start: Vec2,
+    capsule_end: Vec2,
+    capsule_radius: f32,
+    ball: &mut Ball,
+    ball_new_pos: &mut Vec2,
+) -> bool {
+    let (p1, p2) =
+        closest_points_on_segments(ball.center, *ball_new_pos, capsule_start, capsule_end);
 
     let line_distance = (p1 - p2).length();
 
@@ -222,15 +243,21 @@ fn collide_ball_with_capsule(
     return true;
 }
 
-fn collide_ball_with_paddle(state: &mut GameState, new_pos:&mut Vec2) {
+fn collide_ball_with_paddle(state: &mut GameState, new_pos: &mut Vec2) {
     let paddle_line_start = state.paddle.center - vec2(PADDLE_WIDTH * 0.5, 0.0);
     let paddle_line_end = state.paddle.center + vec2(PADDLE_WIDTH * 0.5, 0.0);
     let paddle_radius = PADDLE_HEIGHT * 0.5;
 
-    collide_ball_with_capsule(paddle_line_start, paddle_line_end, paddle_radius, &mut state.ball, new_pos);
+    collide_ball_with_capsule(
+        paddle_line_start,
+        paddle_line_end,
+        paddle_radius,
+        &mut state.ball,
+        new_pos,
+    );
 }
 
-fn collide_ball_with_level(state: &mut GameState, new_pos:&mut Vec2) {
+fn collide_ball_with_level(state: &mut GameState, new_pos: &mut Vec2) {
     let mut destroyed_blocks: Vec<usize> = vec![];
 
     for (i, block) in state.level.blocks.iter().enumerate().rev() {
@@ -248,7 +275,7 @@ fn collide_ball_with_level(state: &mut GameState, new_pos:&mut Vec2) {
     }
 }
 
-fn collide_ball_with_wall(state: &mut GameState, new_pos:&mut Vec2) {
+fn collide_ball_with_wall(state: &mut GameState, new_pos: &mut Vec2) {
     let min_x = -WORLD_WIDTH * 0.5 + BALL_RADIUS;
     let max_x = WORLD_WIDTH * 0.5 - BALL_RADIUS;
     let min_y = -WORLD_HEIGHT * 0.5 + BALL_RADIUS;
@@ -301,12 +328,7 @@ fn run_menu(state: &mut GameState) {
         .title_bar(false)
         .resizable(false)
         .show(egui(), |ui| {
-            draw_text(
-                "Breakout",
-                vec2(0.0, -10.0),
-                WHITE,
-                TextAlign::Center,
-            );
+            draw_text("Breakout", vec2(0.0, -10.0), WHITE, TextAlign::Center);
 
             if ui.button("Start Game").clicked() {
                 state.state = State::Game;

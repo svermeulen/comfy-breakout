@@ -1,8 +1,14 @@
 use comfy::*;
 
 pub fn try_get_lines_intersection_point(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) -> Option<Vec2> {
-    let d1 = Vec2 { x: a2.x - a1.x, y: a2.y - a1.y };
-    let d2 = Vec2 { x: b2.x - b1.x, y: b2.y - b1.y };
+    let d1 = Vec2 {
+        x: a2.x - a1.x,
+        y: a2.y - a1.y,
+    };
+    let d2 = Vec2 {
+        x: b2.x - b1.x,
+        y: b2.y - b1.y,
+    };
 
     let det = d1.x * d2.y - d1.y * d2.x;
 
@@ -21,7 +27,10 @@ pub fn try_get_lines_intersection_point(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2) 
         return None;
     }
 
-    return Some(Vec2 { x: a1.x + t1 * d1.x, y: a1.y + t1 * d1.y });
+    return Some(Vec2 {
+        x: a1.x + t1 * d1.x,
+        y: a1.y + t1 * d1.y,
+    });
 }
 
 pub fn closest_points_on_segment(point: Vec2, a: Vec2, b: Vec2) -> Vec2 {
@@ -29,10 +38,10 @@ pub fn closest_points_on_segment(point: Vec2, a: Vec2, b: Vec2) -> Vec2 {
     let ap = point - a;
 
     let t = ap.dot(ab) / ab.dot(ab);
-    
+
     // clamp to [0, 1] to stay within segment
     let t_clamped = t.max(0.0).min(1.0);
-    
+
     // Calculate the closest point
     a + ab * t_clamped
 }
