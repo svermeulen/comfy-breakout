@@ -22,7 +22,7 @@ pub fn load_assets() {
     );
 
     let sounds = vec![
-        ("ball-hit", "sfx/wall-hit.ogg"),
+        ("ball-hit", "sfx/ball-hit.oga"),
     ];
 
     load_multiple_sounds(
